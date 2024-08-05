@@ -8,7 +8,7 @@ const isOpen = defineModel(false);
 <template>
     <div
         v-if="isOpen"
-        class="min-w-full min-h-screen flex items-center justify-center fixed blur-sm"
+        class="min-w-full min-h-screen flex items-center justify-center fixed"
     >
         <div class="w-full max-w-96 p-4 relative bg-white">
             <button

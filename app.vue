@@ -1,19 +1,31 @@
 <script setup lang="ts">
 let ws: WebSocket | undefined;
 
+const isOpenModal = ref(false);
+
+const userCookie = useCookie<string>("user");
+const user = ref({} as UserDetailsModel);
+
 const message = ref("");
 const messages = useState<MessageDetailsModel[]>(() => []);
-
-const userId = useCookie<string>("userId");
-console.log("userId.value", userId.value);
-
 if (!messages.value.length) {
     const response = await $fetch("/api/messages");
     messages.value.push(...response.messages);
 }
 
+watch(userCookie, (newValue) => {
+    console.log(newValue);
+    
+    if (!newValue) {
+        isOpenModal.value = true;
+    } else {
+        user.value = JSON.parse(newValue);
+    }
+}, { immediate: true });
+
 const createMessage = (text: string) => {
     return JSON.stringify({
+        authorId: user.value?.id,
         text,
         created_at: new Date().toLocaleString(),
     });
@@ -48,7 +60,7 @@ const clear = () => {
 
 const connect = async () => {
     const isSecure = location.protocol === "https:";
-    const url = (isSecure ? "wss://" : "ws://") + location.host + "/api/chat-ws?userId=" + userId.value;
+    const url = (isSecure ? "wss://" : "ws://") + location.host + "/api/chat-ws?userId=" + user.value?.id;
     if (ws) {
         log("ws", "Закрытие предыдущего соединения перед повторным подключением...");
         ws.close();
@@ -147,5 +159,12 @@ useServerHead({
             </button>
             </div>
         </div>
+
+        <!-- Modal -->
+        <Modal v-model="isOpenModal">
+            <CreateNameForm
+                :user="user"
+            />
+        </Modal>
     </main>
 </template>
