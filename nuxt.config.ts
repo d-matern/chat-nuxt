@@ -16,11 +16,6 @@ export default defineNuxtConfig({
     ]
   },
 
-  modules: [
-    "@prisma/nuxt",
-    "@nuxtjs/tailwindcss"
-  ],
-
   css: ['~/assets/css/main.css'],
   postcss: {
     plugins: {
