@@ -21,11 +21,11 @@ const connectWS = async () => {
     ws = new WebSocket(url);
 
     ws.addEventListener("message", (event) => {
-        const response = JSON.parse(event.data);
-        if (response.type === "error") {
-            serverError.value = response.message;
+        const res: WSResponseModel = JSON.parse(event.data);
+        if (res.type === "error") {
+            serverError.value = res.message.toString();
         } else {
-            setUser(response.message);
+            setUser(res.message as UserDetailsModel);
             router.push("/chat");
         }
     });
