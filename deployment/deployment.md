@@ -37,7 +37,6 @@ Host github-paket-frontend
 
 4. Склонируйте репо
 ```
-cd /chat-nuxt
 git clone git@github.com:3dmatern/chat-nuxt.git
 
 ls -la
