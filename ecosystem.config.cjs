@@ -7,7 +7,6 @@ module.exports = {
             instances: "max",
             script: "./.output/server/index.mjs",
             env: {
-                DATABASE_URL: "file:./dev.db",
                 NUXT_PUBLIC_WS: "wss",
             }
         },
