@@ -12,6 +12,7 @@
   "dependencies": {
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",
+    "@pinia/nuxt": "^0.5.3",
     "@prisma/client": "^5.17.0",
     "clsx": "^2.1.1",
     "nuxt": "^3.12.4",

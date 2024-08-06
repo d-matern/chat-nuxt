@@ -1,10 +1,38 @@
 <script setup lang="ts">
-defineProps<{
-    user: UserDetailsModel;
-}>();
-const emit = defineEmits(["update:user"]);
+import { useUserStore } from '~/store/user';
+
+let ws: WebSocket | undefined;
+
+const router = useRouter();
+const { setUser } = useUserStore();
+
 const name = ref("");
 const serverError = ref("");
+
+const connectWS = async () => {
+    const isSecure = location.protocol === "https://";
+    const url = (isSecure ? "wss://" : "ws://") + location.host + "/api/user/";
+    if (ws) {
+        console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
+        ws.close();
+    }
+
+    console.log("ws: Подключаемся к", url, "...");
+    ws = new WebSocket(url);
+
+    ws.addEventListener("message", (event) => {
+        const response = JSON.parse(event.data);
+        if (response.type === "error") {
+            serverError.value = response.message;
+        } else {
+            setUser(response.message);
+            router.push("/chat");
+        }
+    });
+
+    await new Promise((resolve) => ws!.addEventListener("open", resolve));
+    console.log("ws: Подключились!");
+};
 
 const onSubmit = async () => {
     serverError.value = "";
@@ -14,21 +42,19 @@ const onSubmit = async () => {
         return;
     }
 
-    try {
-        const user = await $fetch("/api/user");
-        console.log(useCookie("user"));
-        
-        emit("update:user", user);
-    } catch (error: any) {
-        serverError.value = error.data.message;
-    }
+    ws!.send(name.value);
+    name.value = "";
 };
+
+onMounted(async () => {
+    connectWS();
+});
 </script>
 
 <template>
     <FormContainer
-        class="w-full space-y-6"
-        title="Введите Ваше имя"
+        class="w-full p-4 space-y-6"
+        title="Авторизация"
         :footer="{
             text: 'Хотели бы увидеть код?',
             url: 'https://github.com/3dmatern/chat-nuxt',
@@ -42,6 +68,7 @@ const onSubmit = async () => {
                 v-model="name"
                 type="text"
                 autocomplete="first name"
+                placeholder="Введите Ваше имя"
                 required
             />
         </FormLabelContainer>
