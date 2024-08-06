@@ -43,7 +43,8 @@ const clear = () => {
 };
 
 const connectWS = async () => {
-    const url = `${config.public.ws}://${location.host}/api/chat-ws?userId=${user?.id}`;
+    // const url = `${config.public.ws}://${location.host}/api/chat-ws?userId=${user?.id}`;
+    const url = `wss://${location.host}/api/chat-ws?userId=${user?.id}`;
     if (ws) {
         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
         ws.close();
