@@ -11,8 +11,7 @@ const name = ref("");
 const serverError = ref("");
 
 const connectWS = async () => {
-    // const url = `${config.public.ws}://${location.host}/api/user/`;
-    const url = `wss://${location.host}/api/user/`;
+    const url = `${config.public.ws}://${location.host}/api/user/`;
     if (ws) {
         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
         ws.close();
