@@ -8,7 +8,7 @@ module.exports = {
             script: "./.output/server/index.mjs",
             env: {
                 DATABASE_URL: "file:./dev.db",
-                NUXT_PUBLIC_BASE_URL: "dmatern.ru/api/",
+                NUXT_PUBLIC_WS: "wss",
             }
         },
     ],

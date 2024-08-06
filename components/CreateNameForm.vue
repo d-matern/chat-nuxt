@@ -11,9 +11,7 @@ const name = ref("");
 const serverError = ref("");
 
 const connectWS = async () => {
-    const isSecure = window.location.protocol === "https://";
-    console.log("isSecure", isSecure, window.location.protocol);
-    const url = `${isSecure ? 'wss' : 'ws'}://${config.public.baseUrl}user/`;
+    const url = `${config.public.ws}://${location.host}/api/user/`;
     if (ws) {
         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
         ws.close();

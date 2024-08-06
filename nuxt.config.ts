@@ -30,7 +30,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      baseUrl: "localhost:3000/api/"
+      ws: "ws"
     }
   }
 });
