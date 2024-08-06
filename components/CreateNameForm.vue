@@ -5,6 +5,8 @@ let ws: WebSocket | undefined;
 
 const router = useRouter();
 const { setUser } = useUserStore();
+console.log(location.host);
+
 
 const name = ref("");
 const serverError = ref("");
