@@ -4,16 +4,16 @@ import { useUserStore } from '~/store/user';
 let ws: WebSocket | undefined;
 
 const router = useRouter();
+const config = useRuntimeConfig();
 const { setUser } = useUserStore();
-console.log(location.host);
-
 
 const name = ref("");
 const serverError = ref("");
 
 const connectWS = async () => {
-    const isSecure = location.protocol === "https://";
-    const url = (isSecure ? "wss://" : "ws://") + location.host + "/api/user/";
+    const isSecure = window.location.protocol === "https://";
+    console.log("isSecure", isSecure, window.location.protocol);
+    const url = `${isSecure ? 'wss' : 'ws'}://${config.public.baseUrl}user/`;
     if (ws) {
         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
         ws.close();

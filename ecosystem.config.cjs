@@ -7,8 +7,9 @@ module.exports = {
             instances: "max",
             script: "./.output/server/index.mjs",
             env: {
-                DATABASE_URL: "file:./dev.db"
-            },
+                DATABASE_URL: "file:./dev.db",
+                NUXT_PUBLIC_BASE_URL: "dmatern.ru/api/",
+            }
         },
     ],
 };

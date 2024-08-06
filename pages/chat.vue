@@ -4,6 +4,7 @@ import { useUserStore } from '~/store/user';
 let ws: WebSocket | undefined;
 
 const router = useRouter();
+const config = useRuntimeConfig();
 const { user, logout } = useUserStore();
 
 const message = ref("");
@@ -42,8 +43,8 @@ const clear = () => {
 };
 
 const connectWS = async () => {
-    const isSecure = location.protocol === "https:";
-    const url = (isSecure ? "wss://" : "ws://") + location.host + "/api/chat-ws?userId=" + user.value?.id;
+    const isSecure = window.location.protocol === "https://";
+    const url = `${isSecure ? 'wss' : 'ws'}://${config.public.baseUrl}chat-ws?userId=${user?.id}`;
     if (ws) {
         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
         ws.close();
