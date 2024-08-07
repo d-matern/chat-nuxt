@@ -20,6 +20,9 @@ dependencies:
   clsx:
     specifier: ^2.1.1
     version: 2.1.1
+  crossws:
+    specifier: ^0.2.4
+    version: 0.2.4
   jsonwebtoken:
     specifier: ^9.0.2
     version: 9.0.2
@@ -32,6 +35,9 @@ dependencies:
   tailwind-merge:
     specifier: ^2.4.0
     version: 2.4.0
+  ufo:
+    specifier: ^1.5.4
+    version: 1.5.4
   vue:
     specifier: latest
     version: 3.4.35

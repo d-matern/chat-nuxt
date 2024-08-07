@@ -3,7 +3,6 @@ import { useUserStore } from '~/store/user';
 
 let ws: WebSocket | undefined;
 
-const router = useRouter();
 const config = useRuntimeConfig();
 const { user } = storeToRefs(useUserStore());
 const { logout } = useUserStore();
@@ -56,7 +55,7 @@ const handleClose = (event: CloseEvent) => {
 };
 
 const connectWS = async () => {
-    const url = `${config.public.ws}://${location.host}/api/chat-ws?userId=${user.value?.id}`;
+    const url = `${config.public.ws}://${location.host}/api/chat-ws?userId=${user.value?.id}&name=${user.value?.name}`;
     if (ws) {
         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
         // ws.removeEventListener("message", handleMessage); // Убедитесь, что обработчики удалены

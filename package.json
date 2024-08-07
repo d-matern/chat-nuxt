@@ -15,10 +15,12 @@
     "@pinia/nuxt": "^0.5.3",
     "@prisma/client": "^5.17.0",
     "clsx": "^2.1.1",
+    "crossws": "^0.2.4",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "nuxt": "^3.12.4",
     "tailwind-merge": "^2.4.0",
+    "ufo": "^1.5.4",
     "vue": "latest"
   },
   "devDependencies": {

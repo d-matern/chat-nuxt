@@ -1,18 +1,30 @@
+import { getQuery } from "ufo";
 import prisma from "~/lib/prisma";
+import type { Peer } from "crossws";
 
-const connectedPeers = new Set(); // Создаем множество подключенных пользователей
+const systemUser = {
+    id: "1",
+    name: "System",
+    created_at: "07.08.2024, 00:00:01"
+};
+const connectedPeers = new Map<string, { online: boolean }>(); // Создаем карту подключенных пользователей
 
 export default defineWebSocketHandler({
     open(peer) {
-        console.log("connectedPeers", connectedPeers);
+        console.log(`[ws] open ${peer}`);
+        const userId = getUserId(peer);
+        connectedPeers.set(userId, { online: true }); // Добавляем нового пользователя в карту подключенных пользователей
         
-        const isPeer = connectedPeers.has(peer);
-        if (!isPeer) {
-            console.log("[ws] open", peer);
-            connectedPeers.add(peer); // Добавляем нового пользователя в множество подключенных пользователей
-        } else {
-            console.log("[ws] open: повторное открытие соединения");
-        }
+        const stats = getStats();
+        const userName = getUserName(peer);
+        peer.send(
+            sendSystem(
+                `Добро пожаловать в чат ${userName}! (Пользователей онлайн: ${stats.online}/${stats.total})`
+            )
+        );
+
+        peer.subscribe("chat");
+        peer.publish("chat", sendSystem(`Пользователь ${userName} подключился!`));
     },
     async message(peer, message) {
         console.log("[ws] message", peer, message);
@@ -34,14 +46,9 @@ export default defineWebSocketHandler({
 
             // Отправляем успешное сообщение только отправителю
             peer.send(JSON.stringify(successResponse));
-
-            // Отправляем новое сообщение всем остальным подключенным пользователям
-            connectedPeers.forEach((connectedPeer) => {
-                console.log(connectedPeer !== peer);
-                
-                if (connectedPeer !== peer) {
-                    connectedPeer.send(JSON.stringify({ type: "new_message", message: savedMessage }))
-                }
+            peer.publish("chat", {
+                type: "new_message",
+                message: savedMessage
             });
         } catch (error) {
             console.error("Ошибка отправки сообщения:", error);
@@ -53,14 +60,40 @@ export default defineWebSocketHandler({
         }
     },
     close(peer, event) {
-         if (connectedPeers.has(peer)) {
-            console.log("[ws] close", peer, event);
-            connectedPeers.delete(peer); // Удаляем пользователя из множества при закрытии соединения
-        } else {
-            console.log("Соединение не найдено");
-        }
+        console.log(`[ws] close ${peer}`);
+
+        const userId = getUserId(peer);
+        connectedPeers.set(userId, { online: false });
     },
     error(peer, error) {
-        console.log("[ws] error", peer, error);
+        console.log(`[ws] error ${peer}`, error);
     }
 });
+
+function getUserId(peer: Peer) {
+  const query = getQuery(peer.url);
+  return query.userId as string;
+};
+
+function getUserName(peer: Peer) {
+  const query = getQuery(peer.url);
+  return query.name as string;
+};
+
+function getStats() {
+  const online = Array.from(connectedPeers.values()).filter((u) => u.online).length;
+  return { online, total: connectedPeers.size };
+};
+
+function sendSystem(text: string) {
+    return {
+        type: "new_message",
+        message: {
+            id: Date.now().toString(),
+            author: systemUser,
+            authorId: systemUser.id,
+            created_at: new Date().toLocaleString(),
+            text
+        }
+    };
+}
