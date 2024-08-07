@@ -5,26 +5,19 @@ let ws: WebSocket | undefined;
 
 const router = useRouter();
 const config = useRuntimeConfig();
-const { user, logout } = useUserStore();
+const { user } = storeToRefs(useUserStore());
+const { logout } = useUserStore();
+console.log(user.value);
 
 const message = ref("");
 const serverError = ref("");
 
-const messages = useState<MessageDetailsModel[]>(() => []);
-if (!messages.value.length) {
-    const response = await $fetch("/api/messages");
-    messages.value.push(...response.messages);
-}
-
-watch(() => user, (newValue) => {
-    if (!newValue) {
-        router.push("/");
-    } 
-}, { immediate: true });
+const response = await $fetch("/api/messages");
+const messages = useState<MessageDetailsModel[]>("messages", () => response.messages);
 
 const createMessageJSON = (text: string) => {
     return JSON.stringify({
-        authorId: user?.id,
+        authorId: user.value?.id,
         text,
         created_at: new Date().toLocaleString(),
     });
@@ -65,7 +58,7 @@ const handleClose = (event: CloseEvent) => {
 };
 
 const connectWS = async () => {
-    const url = `${config.public.ws}://${location.host}/api/chat-ws?userId=${user?.id}`;
+    const url = `${config.public.ws}://${location.host}/api/chat-ws?userId=${user.value?.id}`;
     if (ws) {
         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
         ws.removeEventListener("message", handleMessage); // Убедитесь, что обработчики удалены
@@ -107,6 +100,15 @@ const handleLogout = () => {
 onMounted(async () => {
     connectWS();
     scroll();
+});
+
+onUnmounted(() => {
+    if (ws) {
+        ws.removeEventListener("message", handleMessage);
+        ws.removeEventListener("error", handleError);
+        ws.removeEventListener("close", handleClose);
+        ws.close();
+    }
 });
 </script>
 
@@ -170,7 +172,7 @@ onMounted(async () => {
             </button>
             <button
                 class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 sm:rounded-r-lg w-1/4"
-                @click="handleLogout"
+                @click="logout"
             >
                 Выход
             </button>

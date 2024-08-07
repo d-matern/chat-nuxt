@@ -4,6 +4,8 @@ const connectedPeers = new Set(); // Создаем множество подк�
 
 export default defineWebSocketHandler({
     open(peer) {
+        console.log("connectedPeers", connectedPeers);
+        
         const isPeer = connectedPeers.has(peer);
         if (!isPeer) {
             console.log("[ws] open", peer);
@@ -51,8 +53,12 @@ export default defineWebSocketHandler({
         }
     },
     close(peer, event) {
-        console.log("[ws] close", peer, event);
-        connectedPeers.delete(peer); // Удаляем пользователя из множества при закрытии соединения
+         if (connectedPeers.has(peer)) {
+            console.log("[ws] close", peer, event);
+            connectedPeers.delete(peer); // Удаляем пользователя из множества при закрытии соединения
+        } else {
+            console.log("Соединение не найдено");
+        }
     },
     error(peer, error) {
         console.log("[ws] error", peer, error);

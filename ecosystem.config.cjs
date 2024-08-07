@@ -7,12 +7,14 @@ module.exports = {
             instances: "max",
             script: "./.output/server/index.mjs",
             env_dev: {
+                DATABASE_URL: "postgresql://login:pass@localhost:5432/name_database?schema=public",
+                SECRET_KEY_JWT: "",
                 NUXT_PUBLIC_WS: "ws",
-                DATABASE_URL: "postgresql://login:pass@localhost:5432/name_database?schema=public"
             },
             env_prod: {
+                DATABASE_URL:"postgresql://login:pass@localhost:5432/name_database?schema=public",
+                SECRET_KEY_JWT: "",
                 NUXT_PUBLIC_WS: "wss",
-                DATABASE_URL:"postgresql://login:pass@localhost:5432/name_database?schema=public"
             }
         },
     ],
