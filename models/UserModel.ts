@@ -3,5 +3,5 @@ export interface UserCreateModel {
 }
 
 export interface UserDetailsModel extends UserCreateModel {
-    id: number;
+    id: string;
 }

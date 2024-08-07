@@ -1,10 +1,10 @@
 export interface MessageCreateModel {
-    authorId: number;
+    authorId: string;
     created_at: string;
     text: string;
 }
 
 export interface MessageDetailsModel extends MessageCreateModel {
-    id: number;
+    id: string;
     author: UserDetailsModel;
 }
