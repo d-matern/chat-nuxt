@@ -42,10 +42,31 @@ const clear = () => {
     messages.value.splice(0, messages.value.length);
 };
 
+const handleMessage = (event: MessageEvent) => {
+    const res: WSResponseModel = JSON.parse(event.data);
+    if (res.type === "error") {
+        serverError.value = res.message.toString();
+    } else {
+        messages.value.push(res.message as MessageDetailsModel);
+    }
+};
+
+const handleError = (event: Event) => {
+    console.error("WebSocket ошибка:", event);
+};
+
+const handleClose = (event: CloseEvent) => {
+    console.log("WebSocket соединение закрыто:", event);
+    // Переустановите WebSocket соединение при необходимости
+};
+
 const connectWS = async () => {
     const url = `${config.public.ws}://${location.host}/api/chat-ws?userId=${user?.id}`;
     if (ws) {
         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
+        ws.removeEventListener("message", handleMessage); // Убедитесь, что обработчики удалены
+        ws.removeEventListener("error", handleError);
+        ws.removeEventListener("close", handleClose);
         ws.close();
         clear();
     }
@@ -53,14 +74,9 @@ const connectWS = async () => {
     console.log("ws: Подключаемся к", url, "...");
     ws = new WebSocket(url);
 
-    ws.addEventListener("message", (event) => {
-        const res: WSResponseModel = JSON.parse(event.data);
-        if (res.type === "error") {
-            serverError.value = res.message.toString();
-        } else {
-            messages.value.push(res.message as MessageDetailsModel);
-        }
-    });
+    ws.addEventListener("message", handleMessage);
+    ws.addEventListener("error", handleError);
+    ws.addEventListener("close", handleClose);
 
     await new Promise((resolve) => ws!.addEventListener("open", resolve));
     console.log("ws: Подключились!");
@@ -69,8 +85,12 @@ const connectWS = async () => {
 const send = () => {
     console.log("Отправка сообщения...");
     if (message.value) {
-        const data = createMessageJSON(message.value);
-        ws!.send(data);
+        if (ws?.readyState === WebSocket.OPEN) {
+            const data = createMessageJSON(message.value);
+            ws!.send(data);
+        } else {
+            console.warn("WebSocket не открыт. ReadyState:", ws?.readyState);
+        }
     }
     message.value = "";
 };
