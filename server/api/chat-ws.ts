@@ -30,6 +30,11 @@ export default defineWebSocketHandler({
         console.log("[ws] message", peer, message);
         const payload = JSON.parse(message.toString());
 
+        if (payload.text === "ping") {
+            peer.send(JSON.stringify({ type: "pong" }));
+            return;
+        }
+
         try {
             const savedMessage = await prisma.message.create({
                 data: {

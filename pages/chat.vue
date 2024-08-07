@@ -7,6 +7,7 @@ const config = useRuntimeConfig();
 const { user } = storeToRefs(useUserStore());
 const { logout } = useUserStore();
 
+const pingInterval = ref();
 const message = ref("");
 const serverError = ref("");
 
@@ -19,6 +20,17 @@ const createMessageJSON = (text: string) => {
         text,
         created_at: new Date().toLocaleString(),
     });
+};
+
+const startPing = () => {
+    if (pingInterval.value) {
+        clearInterval(pingInterval.value);
+    }
+    pingInterval.value = setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(createMessageJSON("ping"));
+        }
+    }, 30000);
 };
 
 const scroll = () => {
@@ -40,6 +52,8 @@ const handleMessage = (event: MessageEvent) => {
         messages.value.push(res.message as MessageDetailsModel);
     } else if (res.type === "new_message") {
         messages.value.push(res.message as MessageDetailsModel);
+    } else if (res.type === "pong") {
+        console.log("Получен pong от сервера");
     }
     scroll();
 };
@@ -58,9 +72,9 @@ const connectWS = async () => {
     const url = `${config.public.ws}://${location.host}/api/chat-ws?userId=${user.value?.id}&name=${user.value?.name}`;
     if (ws) {
         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
-        // ws.removeEventListener("message", handleMessage); // Убедитесь, что обработчики удалены
-        // ws.removeEventListener("error", handleError);
-        // ws.removeEventListener("close", handleClose);
+        ws.removeEventListener("message", handleMessage); // Убедитесь, что обработчики удалены
+        ws.removeEventListener("error", handleError);
+        ws.removeEventListener("close", handleClose);
         ws.close();
         clear();
     }
@@ -73,6 +87,7 @@ const connectWS = async () => {
     ws.addEventListener("close", handleClose);
 
     await new Promise((resolve) => ws!.addEventListener("open", resolve));
+    startPing();
     scroll();
     console.log("ws: Подключились!");
 };
@@ -95,6 +110,9 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
+    if (pingInterval) {
+        clearInterval(pingInterval.value);
+    }
     if (ws) {
         ws.removeEventListener("message", handleMessage);
         ws.removeEventListener("error", handleError);
