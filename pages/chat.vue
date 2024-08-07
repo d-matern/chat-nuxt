@@ -7,7 +7,6 @@ const router = useRouter();
 const config = useRuntimeConfig();
 const { user } = storeToRefs(useUserStore());
 const { logout } = useUserStore();
-console.log(user.value);
 
 const message = ref("");
 const serverError = ref("");
@@ -29,7 +28,6 @@ const scroll = () => {
         window.scrollTo(0, document.body.scrollHeight + 100);
     });
 };
-
 
 const clear = () => {
     messages.value.splice(0, messages.value.length);
@@ -76,6 +74,7 @@ const connectWS = async () => {
     ws.addEventListener("close", handleClose);
 
     await new Promise((resolve) => ws!.addEventListener("open", resolve));
+    scroll();
     console.log("ws: Подключились!");
 };
 
@@ -92,14 +91,8 @@ const send = () => {
     message.value = "";
 };
 
-const handleLogout = () => {
-    logout();
-    router.push("/");
-};
-
 onMounted(async () => {
     connectWS();
-    scroll();
 });
 
 onUnmounted(() => {
@@ -117,9 +110,8 @@ onUnmounted(() => {
         <!-- Сообщения -->
         <div
             id="messages"
-            class="min-h-screen px-4 pt-8 pb-21 flex flex-col justify-end bg-slate-900 sm:pb-12"    
+            class="min-h-screen px-4 pt-8 pb-24 flex flex-col justify-end bg-slate-900 sm:pb-12"    
         >
-
             <div
                 v-for="message in messages"
                 :key="message.id"

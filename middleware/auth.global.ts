@@ -9,7 +9,6 @@ interface ParseToken extends UserDetailsModel {
 export default defineNuxtRouteMiddleware((to) => {
     const { authenticated, user } = storeToRefs(useUserStore());
     const accessToken = useCookie("access_token");
-    console.log({authenticated: authenticated.value, user: user.value, userCookie: accessToken.value});
     
     if (accessToken.value) {
         try {
