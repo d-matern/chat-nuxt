@@ -8,9 +8,11 @@ module.exports = {
             script: "./.output/server/index.mjs",
             env_dev: {
                 NUXT_PUBLIC_WS: "ws",
+                DATABASE_URL: "postgresql://login:pass@localhost:5432/name_database?schema=public"
             },
             env_prod: {
                 NUXT_PUBLIC_WS: "wss",
+                DATABASE_URL:"postgresql://login:pass@localhost:5432/name_database?schema=public"
             }
         },
     ],
