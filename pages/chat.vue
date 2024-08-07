@@ -59,9 +59,9 @@ const connectWS = async () => {
     const url = `${config.public.ws}://${location.host}/api/chat-ws?userId=${user.value?.id}`;
     if (ws) {
         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
-        ws.removeEventListener("message", handleMessage); // Убедитесь, что обработчики удалены
-        ws.removeEventListener("error", handleError);
-        ws.removeEventListener("close", handleClose);
+        // ws.removeEventListener("message", handleMessage); // Убедитесь, что обработчики удалены
+        // ws.removeEventListener("error", handleError);
+        // ws.removeEventListener("close", handleClose);
         ws.close();
         clear();
     }
