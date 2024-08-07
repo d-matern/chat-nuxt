@@ -46,9 +46,12 @@ const handleMessage = (event: MessageEvent) => {
     const res: WSResponseModel = JSON.parse(event.data);
     if (res.type === "error") {
         serverError.value = res.message.toString();
-    } else {
+    } else if (res.type === "success") {
+        messages.value.push(res.message as MessageDetailsModel);
+    } else if (res.type === "new_message") {
         messages.value.push(res.message as MessageDetailsModel);
     }
+    scroll();
 };
 
 const handleError = (event: Event) => {
