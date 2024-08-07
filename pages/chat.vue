@@ -58,6 +58,7 @@ const handleError = (event: Event) => {
 const handleClose = (event: CloseEvent) => {
     console.log("WebSocket соединение закрыто:", event);
     // Переустановите WebSocket соединение при необходимости
+    connectWS();
 };
 
 const connectWS = async () => {
