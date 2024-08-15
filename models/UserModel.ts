@@ -4,4 +4,5 @@ export interface UserCreateModel {
 
 export interface UserDetailsModel extends UserCreateModel {
     id: string;
+    token: string;
 }

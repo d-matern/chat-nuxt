@@ -67,25 +67,36 @@ touch dmatern.nginx.conf
 
 2. Содержимое файла
 ```nginx
-upstream paket-web {
-    server 127.0.0.1:3000;
-}
-
 server {
-    server_name {domen, for example: dmatern.ru};
+    listen 443 ssl;
+    server_name {domen, for example: example.com};
 
     location / {
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header Host $http_host;
-
+        proxy_pass http://localhost:3000; # Наше Nuxt приложение
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
 
-        proxy_pass http://dmatern;
-        proxy_redirect off;
-        proxy_read_timeout 240s;
+        # Добавление параметров таймаута
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+        proxy_connect_timeout 3600s;
+    }
+
+    location /api/chat-ws {
+        proxy_pass http://localhost:3000; # Наше WebSocket сервер
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+
+        # Добавление параметров таймаута
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+        proxy_connect_timeout 3600s;
     }
 }
 ```

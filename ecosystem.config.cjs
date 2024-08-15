@@ -9,11 +9,13 @@ module.exports = {
             env_dev: {
                 DATABASE_URL: "postgresql://login:pass@localhost:5432/name_database?schema=public",
                 SECRET_KEY_JWT: "",
+                SECRET_KEY_MOBILE_APP: "",
                 NUXT_PUBLIC_WS: "ws",
             },
             env_prod: {
                 DATABASE_URL:"postgresql://login:pass@localhost:5432/name_database?schema=public",
                 SECRET_KEY_JWT: "",
+                SECRET_KEY_MOBILE_APP: "",
                 NUXT_PUBLIC_WS: "wss",
             }
         },

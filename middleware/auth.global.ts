@@ -22,7 +22,10 @@ export default defineNuxtRouteMiddleware((to) => {
                 accessToken.value = null;
             } else {
                 authenticated.value = true;
-                user.value = decoded;
+                user.value = {
+                    ...decoded,
+                    token: accessToken.value
+                };
             }
         } catch (error) {
             authenticated.value = false;

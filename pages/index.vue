@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
-
-// let ws: WebSocket | undefined;
-
-// const config = useRuntimeConfig();
 const { authenticateUser } = useUserStore();
 
 const name = ref("");
@@ -24,46 +20,6 @@ const onSubmit = async () => {
         serverError.value = error.data.message;
     }
 };
-
-// const connectWS = async () => {
-//     const url = `${config.public.ws}://${location.host}/api/user/`;
-//     if (ws) {
-//         console.log("ws: Закрытие предыдущего соединения перед повторным подключением...");
-//         ws.close();
-//     }
-
-//     console.log("ws: Подключаемся к", url, "...");
-//     ws = new WebSocket(url);
-
-//     ws.addEventListener("message", (event) => {
-//         const res: WSResponseModel = JSON.parse(event.data);
-//         if (res.type === "error") {
-//             serverError.value = res.message.toString();
-//         } else {
-//             setUser(res.message as UserDetailsModel);
-//             router.push("/chat");
-//         }
-//     });
-
-//     await new Promise((resolve) => ws!.addEventListener("open", resolve));
-//     console.log("ws: Подключились!");
-// };
-
-// const onSubmit = async () => {
-//     serverError.value = "";
-
-//     if (!name) {
-//         serverError.value = "Введите имя";
-//         return;
-//     }
-
-//     ws!.send(name.value);
-//     name.value = "";
-// };
-
-// onMounted(async () => {
-//     connectWS();
-// });
 </script>
 
 <template>

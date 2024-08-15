@@ -11,7 +11,8 @@ export default defineEventHandler(async (e) => {
     if (!payload.name) {
         throw createError({
             statusCode: 422,
-            statusMessage: "Введите корректное имя"
+            statusMessage: "Введите корректное имя",
+            message: "Введите корректное имя"
         });
     }
 
