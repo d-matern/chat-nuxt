@@ -24,9 +24,7 @@ export default defineEventHandler((event) => {
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
     };
 
-    for (const [key, value] of Object.entries(headers)) {
-        event.node.res.setHeader(key, value);
-    }
+    setHeaders(event, headers);
 
     if (event.node.req.method === "OPTIONS") {
         event.node.res.statusCode = 204;
