@@ -1,0 +1,40 @@
+name: Deploy Prod on Beget
+on: 
+    push:
+        branches:
+            - main # или название нужной ветки
+
+jobs:
+    # Назвать job можно как угодно
+    build:
+        # Указываем ОС виртуальной машине, в которой запускаются рабочие процессы
+        runs-on: ubuntu-latest
+
+        # Шаги
+        steps:
+            # Шаг для проверки кода из репозитория
+            - uses: actions/checkout@v4
+
+            # Шаг для установки Node.js и npm
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: "20" # укажите версию Node.js, которую вы используете
+
+
+            # Шаг для установки pnpm
+            - name: Install pnpm
+              run: npm i -g pnpm
+
+            # Шаг для установки зависимостей
+            - name: Install Dependencies
+              env:
+                DATABASE_URL: ${{ secrets.DATABASE_URL }}
+                SECRET_KEY_JWT: ${{ secrets.SECRET_KEY_JWT }}
+                SECRET_KEY_MOBILE_APP: ${{ secrets.SECRET_KEY_MOBILE_APP }}
+                NUXT_PUBLIC_WS: ${{ secrets.NUXT_PUBLIC_WS }}
+              run: pnpm install
+
+            # Шаг для сборки приложения
+            - name: Build Nuxt Application
+              run: pnpm build
