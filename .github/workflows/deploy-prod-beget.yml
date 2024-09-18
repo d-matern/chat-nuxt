@@ -1,40 +1,60 @@
-name: Deploy Prod on Beget
+name: Deploy Nuxt.js App on Beget
 on: 
-    push:
-        branches:
-            - main # или название нужной ветки
+  push:
+    branches:
+      - main # или название нужной ветки
 
 jobs:
-    # Назвать job можно как угодно
-    build:
-        # Указываем ОС виртуальной машине, в которой запускаются рабочие процессы
-        runs-on: ubuntu-latest
+  # Назвать job можно как угодно
+  deploy:
+    # Указываем ОС виртуальной машине, в которой запускаются рабочие процессы
+    runs-on: ubuntu-latest
 
-        # Шаги
-        steps:
-            # Шаг для проверки кода из репозитория
-            - uses: actions/checkout@v4
+    # Шаги
+    steps:
+      # Шаг для проверки кода из репозитория
+      - uses: actions/checkout@v4
 
-            # Шаг для установки Node.js и npm
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                node-version: "20" # укажите версию Node.js, которую вы используете
+      # Шаг для установки Node.js и npm
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # укажите версию Node.js, которую вы используете
 
 
-            # Шаг для установки pnpm
-            - name: Install pnpm
-              run: npm i -g pnpm
+      # Шаг для установки pnpm
+      - name: Install pnpm
+        run: npm i -g pnpm
 
-            # Шаг для установки зависимостей
-            - name: Install Dependencies
-              env:
-                DATABASE_URL: ${{ secrets.DATABASE_URL }}
-                SECRET_KEY_JWT: ${{ secrets.SECRET_KEY_JWT }}
-                SECRET_KEY_MOBILE_APP: ${{ secrets.SECRET_KEY_MOBILE_APP }}
-                NUXT_PUBLIC_WS: ${{ secrets.NUXT_PUBLIC_WS }}
-              run: pnpm install
+      # Шаг для установки зависимостей
+      - name: Install Dependencies
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SECRET_KEY_JWT: ${{ secrets.SECRET_KEY_JWT }}
+          SECRET_KEY_MOBILE_APP: ${{ secrets.SECRET_KEY_MOBILE_APP }}
+          NUXT_PUBLIC_WS: ${{ secrets.NUXT_PUBLIC_WS }}
+        run: pnpm install
 
-            # Шаг для сборки приложения
-            - name: Build Nuxt Application
-              run: pnpm build
+      # Шаг для сборки приложения
+      - name: Build Nuxt Application
+        run: pnpm build
+
+      # Устанавливаем SSH ключи и хост, для подключения к хостингу
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Deploy via SSH
+        # в "run" чтобы получить путь для "export" к npm, pm2, pnpm - нужно выполнить
+        # команду в консоли сервера, например: which npm
+        run: |
+          ssh -o StrictHostKeyChecking=on root@45.12.19.88 << 'EOF'
+            export PATH=$PATH:/run/user/0/fnm_multishells/285341_1726647125083/bin
+            cd ../opt/chat-nuxt
+            git pull origin main
+            pnpm install
+            pnpm run build --dotenv .env
+            pm2 restart chat-nuxt ecosystem.config.cjs --env env
+          EOF
