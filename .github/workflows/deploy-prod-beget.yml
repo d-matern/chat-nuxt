@@ -44,8 +44,8 @@ jobs:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+          key: ${{ secrets.beget_hosting.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.beget_hosting.KNOWN_HOSTS }}
 
       - name: Deploy via SSH
         # в "run" чтобы получить путь для "export" к npm, pm2, pnpm - нужно выполнить
