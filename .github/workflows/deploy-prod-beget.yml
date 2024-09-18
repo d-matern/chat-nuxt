@@ -33,7 +33,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_JWT: ${{ secrets.SECRET_KEY_JWT }}
           SECRET_KEY_MOBILE_APP: ${{ secrets.SECRET_KEY_MOBILE_APP }}
-          NUXT_PUBLIC_WS: ${{ secrets.NUXT_PUBLIC_WS }}
+          NUXT_PUBLIC_WS: ${{ vars.NUXT_PUBLIC_WS }}
         run: pnpm install
 
       # Шаг для сборки приложения
@@ -44,8 +44,8 @@ jobs:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.beget_hosting.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.beget_hosting.KNOWN_HOSTS }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: Deploy via SSH
         # в "run" чтобы получить путь для "export" к npm, pm2, pnpm - нужно выполнить
