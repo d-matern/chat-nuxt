@@ -58,5 +58,5 @@ jobs:
             git pull origin main
             pnpm install
             pnpm run build --dotenv .env
-            pm2 restart chat-nuxt ecosystem.config.cjs --env prod
+            pm2 start chat-nuxt ecosystem.config.cjs --env prod
           EOF
